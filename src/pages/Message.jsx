@@ -3,6 +3,7 @@ import axios from 'axios';
 import ReactDOM from 'react-dom';
 import { useNavigate, Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const Message = () => {
 
@@ -25,7 +26,7 @@ const Message = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 };
-                 const response = await axios.get('/api/messages/messages', config);
+                 const response = await axios.get(${API_BASE_URL}/messages/messages, config);
                  setMessages(response.data);
                  setLoading(false);
             }
