@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import axios  from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const AddProject = () =>{
 
     const navigate = useNavigate();
@@ -46,7 +48,7 @@ const AddProject = () =>{
 
             const payload = {...formData, technologies: technologiesArray};
 
-            const response = await axios.post('/api/projects',payload,config);
+            const response = await axios.post(${API_BASE_URL}/projects,payload,config);
             setStatus('success');
 
             setFormData({title: '', description: '', technologies: '', liveUrl: '', githubUrl: ''});
