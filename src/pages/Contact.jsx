@@ -30,7 +30,7 @@ const Contact = () => {
 
     try{
 
-      const response = await axios.post(${API_BASE_URL}/messages, formData);
+      const response = await axios.post(`${API_BASE_URL}/messages, formData`);
       setStatus('success');
       setFormData({name: '', email: '', message: ''});
       console.log('Message sent successfully: ', response.data);
