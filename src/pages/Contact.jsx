@@ -2,6 +2,8 @@ import React, {use, useState} from 'react';
 import axios from 'axios';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const Contact = () => {
    
   //define the states
@@ -28,7 +30,7 @@ const Contact = () => {
 
     try{
 
-      const response = await axios.post('/api/messages', formData);
+      const response = await axios.post(${API_BASE_URL}/messages, formData);
       setStatus('success');
       setFormData({name: '', email: '', message: ''});
       console.log('Message sent successfully: ', response.data);
