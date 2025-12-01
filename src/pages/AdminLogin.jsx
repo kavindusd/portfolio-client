@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,7 +21,7 @@ const AdminLogin = () => {
         try{
 
             //call server endpoint
-            const response = await axios.post('/api/users/login', {email, password});
+            const response = await axios.post(${API_BASE_URL}/users/login, {email, password});
 
             //extract token from endpoint
             const {token} = response.data;
