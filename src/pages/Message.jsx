@@ -26,7 +26,7 @@ const Message = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 };
-                 const response = await axios.get(${API_BASE_URL}/messages/messages, config);
+                 const response = await axios.get(`${API_BASE_URL}/messages/messages, config`);
                  setMessages(response.data);
                  setLoading(false);
             }
