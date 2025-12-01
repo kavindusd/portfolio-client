@@ -17,7 +17,7 @@ const Projects = () => {
             try {
                 // Axios uses the proxy configured in vite.config.js
                 // It calls http://localhost:3001/api/projects
-                const response = await axios.get(${API_BASE_URL}/projects);; 
+                const response = await axios.get(`${API_BASE_URL}/projects`);; 
                 setProjects(response.data); 
                 setLoading(false); 
             } catch (err) {
