@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'https://portfolio-backend-ten-nu.vercel.app/',
         changeOrigin: true,
         secure: false,
       }
