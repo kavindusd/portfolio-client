@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProjectItem from '../components/projectItem';
 import { Container, Row, Col } from 'react-bootstrap';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const Projects = () => {
     //hold the fetched data
