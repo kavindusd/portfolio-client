@@ -21,7 +21,7 @@ const AdminLogin = () => {
         try{
 
             //call server endpoint
-            const response = await axios.post(${API_BASE_URL}/users/login, {email, password});
+            const response = await axios.post(`${API_BASE_URL}/users/login, {email, password}`);
 
             //extract token from endpoint
             const {token} = response.data;
