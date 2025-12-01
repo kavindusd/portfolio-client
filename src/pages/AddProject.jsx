@@ -48,7 +48,7 @@ const AddProject = () =>{
 
             const payload = {...formData, technologies: technologiesArray};
 
-            const response = await axios.post(${API_BASE_URL}/projects,payload,config);
+            const response = await axios.post(`${API_BASE_URL}/projects,payload,config`);
             setStatus('success');
 
             setFormData({title: '', description: '', technologies: '', liveUrl: '', githubUrl: ''});
