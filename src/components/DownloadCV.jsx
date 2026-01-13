@@ -17,7 +17,7 @@ const DownloadCV = ({cvFilePath}) => {
                     <Button
                         variant='outline-success'
                         size='m'
-                        href='../../public/samplecv.pdf'
+                        href='../../public/Kavindu Dissanayake.pdf'
                         download
                         className='shadow-sm'>
                             <Download className='me-2'/> Download CV
