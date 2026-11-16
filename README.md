@@ -1,33 +1,28 @@
-# Portfolio Project
+# Portfolio Frontend (Next.js)
 
-A full-stack portfolio application with separate frontend client and backend service.
+This is the Next.js frontend for the portfolio website.
 
-## Project Structure
-
-```
-porfolio/
-├── client/         # Next.js (App Router, TypeScript, Tailwind CSS)
-└── backend/        # Node.js + Express (TypeScript API)
-```
+## Tech Stack
+- **Framework:** Next.js (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
 
 ## Getting Started
 
-### 1. Client (Next.js)
+First, install dependencies:
 
 ```bash
-cd client
 npm install
+```
+
+Then run the development server:
+
+```bash
 npm run dev
 ```
 
-The frontend will run on [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### 2. Backend (Express API)
+## Deployment on Vercel
 
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-The backend server will run on [http://localhost:5000](http://localhost:5000).
+Since the project is structured at the repository root, you can deploy directly by importing this repository into [Vercel](https://vercel.com) without any extra configuration.
