@@ -49,32 +49,20 @@ export const AdminMessages: React.FC = () => {
     fetchMessages();
   };
 
-  const handleMarkRead = async (id: string) => {
-    // Optimistic UI update
+  const handleMarkRead = (id: string, readState = true) => {
+    // Optimistic UI update for both Supabase list and context
     setSupabaseMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, read: true } : m))
+      prev.map((m) => (m.id === id ? { ...m, read: readState } : m))
     );
-    markLocalRead(id);
-
-    try {
-      await supabase.from('messages').update({ read: true }).eq('id', id);
-    } catch (err) {
-      console.warn('Could not update read state in Supabase', err);
-    }
+    markLocalRead(id, readState);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm('Are you sure you want to delete this inquiry?')) return;
 
-    // Optimistic UI update
+    // Optimistic UI update for both Supabase list and context
     setSupabaseMessages((prev) => prev.filter((m) => m.id !== id));
     deleteLocalMessage(id);
-
-    try {
-      await supabase.from('messages').delete().eq('id', id);
-    } catch (err) {
-      console.warn('Could not delete message from Supabase', err);
-    }
   };
 
   // Use Supabase messages if available, otherwise fallback to local messages
@@ -162,14 +150,16 @@ export const AdminMessages: React.FC = () => {
                     {msg.createdAt.replace('T', ' ').slice(0, 16)}
                   </span>
 
-                  {!msg.read && (
-                    <button
-                      onClick={() => handleMarkRead(msg.id)}
-                      className="text-[11px] font-medium text-purple-300 hover:text-white px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 transition-colors cursor-pointer"
-                    >
-                      Mark Read
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleMarkRead(msg.id, !msg.read)}
+                    className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border transition-colors cursor-pointer ${
+                      !msg.read
+                        ? 'text-purple-300 hover:text-white bg-purple-500/20 hover:bg-purple-500/30 border-purple-500/30'
+                        : 'text-zinc-400 hover:text-zinc-200 bg-zinc-800/60 hover:bg-zinc-700/60 border-zinc-700/50'
+                    }`}
+                  >
+                    {!msg.read ? 'Mark Read' : 'Mark Unread'}
+                  </button>
 
                   <a
                     href={`mailto:${msg.email}?subject=Regarding your portfolio inquiry`}

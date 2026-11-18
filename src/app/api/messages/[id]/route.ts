@@ -1,58 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectDB } from '@/lib/db';
-import { Message } from '@/models/Message';
-import { getAuthUser } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
-// DELETE /api/messages/[id] - Delete a message
+// DELETE /api/messages/[id] - Delete a message from Supabase
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = getAuthUser(req);
-    if (!auth) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
-    await connectDB();
 
-    const deleted = await Message.findByIdAndDelete(id);
-    if (!deleted) {
-      return NextResponse.json({ message: 'Message not found' }, { status: 404 });
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      const { error } = await supabase.from('messages').delete().eq('id', id);
+      if (error) {
+        return NextResponse.json({ message: error.message }, { status: 400 });
+      }
     }
 
     return NextResponse.json({ success: true, message: 'Message deleted' }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting message:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
-// PATCH /api/messages/[id] - Mark message as read/unread
+// PATCH /api/messages/[id] - Mark message as read/unread in Supabase
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const auth = getAuthUser(req);
-    if (!auth) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
     const { id } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const read = body.read !== undefined ? Boolean(body.read) : true;
 
-    await connectDB();
-    const updated = await Message.findByIdAndUpdate(id, body, { new: true });
-
-    if (!updated) {
-      return NextResponse.json({ message: 'Message not found' }, { status: 404 });
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      const { error } = await supabase.from('messages').update({ read }).eq('id', id);
+      if (error) {
+        return NextResponse.json({ message: error.message }, { status: 400 });
+      }
     }
 
-    return NextResponse.json({ success: true, data: updated }, { status: 200 });
-  } catch (error) {
+    return NextResponse.json({ success: true, read }, { status: 200 });
+  } catch (error: any) {
     console.error('Error updating message:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: error.message || 'Internal server error' }, { status: 500 });
   }
 }

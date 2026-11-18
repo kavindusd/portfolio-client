@@ -49,7 +49,7 @@ interface PortfolioContextType {
   deleteCertificate: (id: string) => void;
   messages: ContactMessage[];
   sendMessage: (msg: { name: string; email: string; message: string }) => void;
-  markMessageRead: (id: string) => void;
+  markMessageRead: (id: string, read?: boolean) => void;
   deleteMessage: (id: string) => void;
   resetToDefaults: () => void;
 }
@@ -749,14 +749,42 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
-  const markMessageRead = (id: string) => {
-    setMessages((prev) =>
-      prev.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
-    );
+  const markMessageRead = async (id: string, read = true) => {
+    setMessages((prev) => {
+      const updated = prev.map((msg) => (msg.id === id ? { ...msg, read } : msg));
+      try {
+        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    // If ID is a valid Supabase UUID, sync update to database
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      try {
+        await supabase.from('messages').update({ read }).eq('id', id);
+      } catch (e) {
+        console.warn('Supabase mark read error:', e);
+      }
+    }
   };
 
-  const deleteMessage = (id: string) => {
-    setMessages((prev) => prev.filter((msg) => msg.id !== id));
+  const deleteMessage = async (id: string) => {
+    setMessages((prev) => {
+      const updated = prev.filter((msg) => msg.id !== id);
+      try {
+        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    // If ID is a valid Supabase UUID, sync delete to database
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+      try {
+        await supabase.from('messages').delete().eq('id', id);
+      } catch (e) {
+        console.warn('Supabase delete message error:', e);
+      }
+    }
   };
 
   const resetToDefaults = () => {
