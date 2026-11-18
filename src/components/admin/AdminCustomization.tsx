@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { supabase } from '../../lib/supabase';
 import { Icons } from '../ui/Icons';
@@ -39,6 +39,10 @@ export const AdminCustomization: React.FC = () => {
 
   const [activeSubTab, setActiveSubTab] = useState<CustomizationSubTab>('hero');
   const [formData, setFormData] = useState({ ...profile });
+
+  useEffect(() => {
+    setFormData({ ...profile });
+  }, [profile]);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingAboutPhoto, setUploadingAboutPhoto] = useState(false);

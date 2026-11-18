@@ -21,6 +21,7 @@ export const initialProfile: ProfileInfo = {
     greeting: "Hey, I'm",
     rolePrefix: 'A',
     tagline: 'A web developer with solid foundations in design.',
+    cvUrl: '/cv.pdf',
   },
   about: {
     badge: 'About Me',

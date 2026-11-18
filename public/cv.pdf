@@ -1,0 +1,128 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 2057 >>
+stream
+BT
+/F1 22 Tf
+50 780 Td
+(KAVINDU SANDEEPA) Tj
+ET
+BT
+/F1 12 Tf
+0.4 0.4 0.4 rg
+50 760 Td
+(Full-Stack Web Developer & UI/UX Designer) Tj
+ET
+0.8 0.8 0.8 RG
+2 w
+50 745 m 545 745 l S
+BT
+/F1 10 Tf
+0.2 0.2 0.2 rg
+50 725 Td
+(Portfolio: https://portfolio-client.vercel.app  |  Available for Web Development & Design) Tj
+ET
+BT
+/F1 14 Tf
+0.4 0.2 0.7 rg
+50 690 Td
+(PROFESSIONAL SUMMARY) Tj
+ET
+BT
+/F1 10 Tf
+0.2 0.2 0.2 rg
+50 670 Td
+(Passionate Full-Stack Developer bridging UI/UX design and engineering performance.) Tj
+0 -15 Td
+(Experienced in developing responsive, accessible, high-performance web applications) Tj
+0 -15 Td
+(using modern frontend architecture and scalable backend services.) Tj
+ET
+BT
+/F1 14 Tf
+0.4 0.2 0.7 rg
+50 610 Td
+(CORE SKILLS & TECHNOLOGIES) Tj
+ET
+BT
+/F1 10 Tf
+0.2 0.2 0.2 rg
+50 590 Td
+(- Frontend: React.js, Next.js (App Router), TypeScript, JavaScript (ES6+), Tailwind CSS) Tj
+0 -16 Td
+(- Backend & Databases: Node.js, Express, PHP, Supabase, PostgreSQL, MongoDB) Tj
+0 -16 Td
+(- Tools & Design: Git, GitHub, Figma, REST APIs, Vercel Deployment, Responsive Design) Tj
+ET
+BT
+/F1 14 Tf
+0.4 0.2 0.7 rg
+50 515 Td
+(EXPERIENCE & PROJECTS) Tj
+ET
+BT
+/F1 11 Tf
+0.1 0.1 0.1 rg
+50 495 Td
+(Full-Stack Developer  -  Freelance / Production Applications) Tj
+ET
+BT
+/F1 9 Tf
+0.3 0.3 0.3 rg
+50 480 Td
+(* Architected and deployed interactive modern client portfolio and admin dashboards.) Tj
+0 -14 Td
+(* Integrated Supabase database with Row Level Security, Storage Buckets, and SMTP mail alerts.) Tj
+0 -14 Td
+(* Crafted smooth 60fps animations, responsive mobile design, and dark/light UI systems.) Tj
+ET
+BT
+/F1 14 Tf
+0.4 0.2 0.7 rg
+50 415 Td
+(EDUCATION & CERTIFICATIONS) Tj
+ET
+BT
+/F1 10 Tf
+0.2 0.2 0.2 rg
+50 395 Td
+(Higher Education in Information Technology & Software Engineering) Tj
+0 -15 Td
+(Continuous certifications in Full-Stack Web Development, Modern React, and Cloud Databases) Tj
+ET
+0.8 0.8 0.8 RG
+1 w
+50 70 m 545 70 l S
+BT
+/F1 9 Tf
+0.5 0.5 0.5 rg
+50 52 Td
+(Generated from Portfolio  |  Contact: Check portfolio contact section to get in touch.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000247 00000 n 
+0000002356 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2426
+%%EOF

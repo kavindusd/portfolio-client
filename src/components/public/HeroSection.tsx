@@ -110,10 +110,10 @@ export const HeroSection: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 animate-hero-cta opacity-0">
               {/* Download CV button */}
               <a
-                href={profile.hero?.cvUrl || '#contact'}
-                target={profile.hero?.cvUrl ? '_blank' : undefined}
+                href={profile.hero?.cvUrl || '/cv.pdf'}
+                target="_blank"
                 rel="noopener noreferrer"
-                download={profile.hero?.cvUrl ? `${(profile.name || 'Resume').replace(/\s+/g, '_')}_CV.pdf` : undefined}
+                download={`${(profile.name || 'Kavindu_Sandeepa').replace(/\s+/g, '_')}_CV.pdf`}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 dark:bg-zinc-950/90 dark:hover:bg-zinc-900 border border-purple-500/30 dark:border-zinc-800 hover:border-purple-500/60 shadow-lg shadow-purple-600/25 dark:shadow-black/60 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <Icons.Download size={15} className="text-purple-200 dark:text-purple-400" />

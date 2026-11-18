@@ -450,9 +450,13 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const updateProfile = (updated: Partial<ProfileInfo>) => {
     setProfile((prev) => {
       const next = { ...prev, ...updated };
+      const curCustom = prev.socials?._customization || {};
+      const nextCustom = next.socials?._customization || {};
       const socialsWithCustom = {
         ...(next.socials || {}),
         _customization: {
+          ...curCustom,
+          ...nextCustom,
           hero: next.hero,
           about: next.about,
           servicesConfig: next.servicesConfig,
