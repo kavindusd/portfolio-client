@@ -14,6 +14,7 @@ export interface HeroSectionContent {
   greeting?: string;      // e.g. "Hey, I'm"
   rolePrefix?: string;    // e.g. "A"
   tagline?: string;       // e.g. "A web developer with solid foundations in design."
+  cvUrl?: string;         // URL to uploaded CV PDF or file
 }
 
 export interface AboutSectionContent {

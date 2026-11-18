@@ -42,6 +42,7 @@ export const AdminCustomization: React.FC = () => {
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingAboutPhoto, setUploadingAboutPhoto] = useState(false);
+  const [uploadingCv, setUploadingCv] = useState(false);
 
   // SMTP Testing State
   const [testingSmtp, setTestingSmtp] = useState(false);
@@ -170,6 +171,72 @@ export const AdminCustomization: React.FC = () => {
     } finally {
       setUploadingAboutPhoto(false);
     }
+  };
+
+  // ── Upload CV Document from Computer ──
+  const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCv(true);
+    try {
+      const currentCv = formData.hero?.cvUrl;
+      if (currentCv && currentCv.includes('/portfolio-assets/')) {
+        await deleteStorageFile(currentCv);
+      }
+
+      const fileExt = file.name.split('.').pop() || 'pdf';
+      const cleanBaseName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `${Date.now()}-${cleanBaseName}.${fileExt}`;
+      const filePath = `cv/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio-assets')
+        .upload(filePath, file, {
+          contentType: file.type || 'application/pdf',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        alert(`Storage upload error: ${uploadError.message}`);
+        return;
+      }
+
+      const { data } = supabase.storage.from('portfolio-assets').getPublicUrl(filePath);
+      const updated = {
+        ...formData,
+        hero: {
+          ...(formData.hero || {}),
+          cvUrl: data.publicUrl,
+        },
+      };
+      setFormData(updated);
+      updateProfile(updated);
+      showSaveSuccess('CV document uploaded and saved!');
+    } catch (err: any) {
+      alert(`Error uploading CV: ${err.message}`);
+    } finally {
+      setUploadingCv(false);
+    }
+  };
+
+  // ── Remove Uploaded CV ──
+  const handleRemoveCv = async () => {
+    if (!confirm('Remove this uploaded CV document?')) return;
+    const currentCv = formData.hero?.cvUrl;
+    if (currentCv && currentCv.includes('/portfolio-assets/')) {
+      await deleteStorageFile(currentCv);
+    }
+    const updated = {
+      ...formData,
+      hero: {
+        ...(formData.hero || {}),
+        cvUrl: '',
+      },
+    };
+    setFormData(updated);
+    updateProfile(updated);
+    showSaveSuccess('CV document removed.');
   };
 
   // ── Open Service Modal for Add ──
@@ -517,6 +584,85 @@ export const AdminCustomization: React.FC = () => {
                     className="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-900 dark:text-white focus:outline-none focus:border-purple-500 font-mono"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CV / Resume Upload Card */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#0c0c14] border border-zinc-200 dark:border-zinc-800/80 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <Icons.FileText size={16} className="text-purple-500" />
+                  <span>Curriculum Vitae (CV / Resume)</span>
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                  Upload your CV in PDF or DOCX format. Visitors who click the &quot;Download CV&quot; button in your Hero section will download or view this file.
+                </p>
+              </div>
+
+              {formData.hero?.cvUrl && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 self-start sm:self-auto">
+                  <Icons.Check size={12} />
+                  <span>CV Active</span>
+                </span>
+              )}
+            </div>
+
+            <div className="p-4 rounded-xl bg-zinc-50 dark:bg-black/50 border border-zinc-200 dark:border-zinc-800 space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 cursor-pointer shadow-md shadow-purple-600/20 transition-all">
+                  <Icons.Upload size={14} />
+                  <span>{uploadingCv ? 'Uploading CV Document...' : 'Upload CV File (PDF / Word)'}</span>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={handleCvUpload}
+                    disabled={uploadingCv}
+                    className="hidden"
+                  />
+                </label>
+
+                {formData.hero?.cvUrl && (
+                  <>
+                    <a
+                      href={formData.hero.cvUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 transition-colors"
+                    >
+                      <Icons.Download size={13} />
+                      <span>View Current CV</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={handleRemoveCv}
+                      className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    >
+                      <Icons.Trash size={13} />
+                      <span>Remove</span>
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 mb-1">
+                  Or Direct CV Link (e.g. Google Drive, Dropbox, or custom URL):
+                </label>
+                <input
+                  type="text"
+                  value={formData.hero?.cvUrl || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      hero: { ...(formData.hero || {}), cvUrl: e.target.value },
+                    })
+                  }
+                  placeholder="https://... or uploaded file URL"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-900 dark:text-white focus:outline-none focus:border-purple-500 font-mono"
+                />
               </div>
             </div>
           </div>
