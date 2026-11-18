@@ -198,7 +198,6 @@ export const AdminCustomization: React.FC = () => {
         .from('portfolio-assets')
         .upload(filePath, file, {
           contentType: file.type || 'application/pdf',
-          upsert: true,
         });
 
       if (uploadError) {
