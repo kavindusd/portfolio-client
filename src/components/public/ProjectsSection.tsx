@@ -191,7 +191,7 @@ export const ProjectsSection: React.FC = () => {
               key={project.id}
               href={`/projects/${project.id}`}
               onClick={handleLinkClick}
-              className="w-[250px] xs:w-[270px] sm:w-auto shrink-0 snap-center group relative rounded-2xl overflow-hidden bg-[#fbf9f4] dark:bg-[#0c0c14]/90 border border-stone-300/70 dark:border-zinc-800/80 hover:border-purple-500/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_-8px_rgba(168,85,247,0.15)] dark:hover:shadow-purple-950/30 transition-all duration-300 flex flex-col hover:-translate-y-1 select-none cursor-pointer"
+              className="reveal-card w-[250px] xs:w-[270px] sm:w-auto shrink-0 snap-center group relative rounded-2xl overflow-hidden bg-[#fbf9f4] dark:bg-[#0c0c14]/90 border border-stone-300/70 dark:border-zinc-800/80 hover:border-purple-500/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_-8px_rgba(168,85,247,0.15)] dark:hover:shadow-purple-950/30 transition-all duration-300 flex flex-col hover:-translate-y-1 select-none cursor-pointer"
             >
               {/* Ambient corner glow on hover */}
               <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-purple-500/15 via-indigo-500/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10" />

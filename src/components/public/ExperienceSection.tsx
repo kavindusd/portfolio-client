@@ -33,7 +33,7 @@ export const ExperienceSection: React.FC = () => {
         {experiences.map((exp, index) => (
           <div
             key={exp.id || index}
-            className="group relative pl-14 sm:pl-16 transition-all duration-300"
+            className="reveal-card group relative pl-14 sm:pl-16 transition-all duration-300"
           >
             {/* ── Timeline Checkpoint Node with Dynamic Number Badge (Centered directly on the vertical line) ── */}
             <div className="absolute left-[18px] sm:left-[22px] -translate-x-1/2 top-0.5 z-10">

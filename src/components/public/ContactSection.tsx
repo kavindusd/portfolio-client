@@ -42,7 +42,7 @@ export const ContactSection: React.FC = () => {
       </div>
 
       {/* ── Modern Unified Contact Card with Red & Blue Color Mesh INSIDE ── */}
-      <div className="relative rounded-2xl p-5 sm:p-10 lg:p-12 bg-[#fbf9f4]/85 dark:bg-[#0c0c14]/85 backdrop-blur-2xl border border-stone-300/70 dark:border-zinc-800/80 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl overflow-hidden transition-all duration-300">
+      <div className="reveal-card relative rounded-2xl p-5 sm:p-10 lg:p-12 bg-[#fbf9f4]/85 dark:bg-[#0c0c14]/85 backdrop-blur-2xl border border-stone-300/70 dark:border-zinc-800/80 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl overflow-hidden transition-all duration-300">
         {/* ── Red & Blue Atmospheric Color Mesh Backdrop INSIDE the container (Matching Hero Section) ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-50 dark:opacity-75 transition-opacity duration-500">
           {/* Dual-tone vivid red, blue, and violet radial mesh gradient */}

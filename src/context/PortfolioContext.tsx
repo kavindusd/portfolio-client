@@ -48,6 +48,7 @@ interface PortfolioContextType {
   updateCertificate: (id: string, updated: Partial<CertificateItem>) => void;
   deleteCertificate: (id: string) => void;
   messages: ContactMessage[];
+  readMessageIds: string[];
   sendMessage: (msg: { name: string; email: string; message: string }) => void;
   markMessageRead: (id: string, read?: boolean) => void;
   deleteMessage: (id: string) => void;
@@ -74,6 +75,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [educations, setEducations] = useState<EducationItem[]>(initialEducations);
   const [certificates, setCertificates] = useState<CertificateItem[]>(initialCertificates);
   const [messages, setMessages] = useState<ContactMessage[]>(initialMessages);
+  const [readMessageIds, setReadMessageIds] = useState<string[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Load from localStorage on client mount
@@ -176,6 +178,9 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       const storedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES);
       if (storedMessages) setMessages(JSON.parse(storedMessages));
+
+      const storedReadIds = localStorage.getItem('portfolio_read_msg_ids');
+      if (storedReadIds) setReadMessageIds(JSON.parse(storedReadIds));
     } catch (e) {
       console.warn('Could not read from localStorage', e);
     } finally {
@@ -224,6 +229,9 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         if (profData) {
           const custom = profData.socials?._customization || {};
+          if (Array.isArray(custom.readMessageIds)) {
+            setReadMessageIds(custom.readMessageIds);
+          }
           setProfile({
             name: profData.name || initialProfile.name,
             role: profData.role || initialProfile.role,
@@ -350,16 +358,30 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           .select('*')
           .order('created_at', { ascending: false });
 
+        const custom = profData?.socials?._customization || {};
+        const savedReadIds: string[] = Array.isArray(custom.readMessageIds) ? custom.readMessageIds : [];
+        const savedDeletedIds: string[] = Array.isArray(custom.deletedMessageIds) ? custom.deletedMessageIds : [];
+
         if (msgData && msgData.length > 0) {
-          setMessages(
-            msgData.map((m: any) => ({
+          const filtered = msgData
+            .filter((m: any) => !savedDeletedIds.includes(m.id))
+            .map((m: any) => ({
               id: m.id,
               name: m.name,
               email: m.email,
               message: m.message,
-              read: Boolean(m.read),
+              read: Boolean(m.read) || savedReadIds.includes(m.id),
               createdAt: m.created_at,
-            }))
+            }));
+          setMessages(filtered);
+        } else {
+          setMessages((prev) =>
+            prev
+              .filter((m) => !savedDeletedIds.includes(m.id))
+              .map((m) => ({
+                ...m,
+                read: Boolean(m.read) || savedReadIds.includes(m.id),
+              }))
           );
         }
       } catch (err) {
@@ -750,34 +772,114 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const markMessageRead = async (id: string, read = true) => {
-    setMessages((prev) => {
-      const updated = prev.map((msg) => (msg.id === id ? { ...msg, read } : msg));
+    // 1. Update in-memory messages state
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, read } : msg))
+    );
+
+    // 2. Update readMessageIds list and persist to Supabase & localStorage
+    setReadMessageIds((prev) => {
+      const next = read
+        ? Array.from(new Set([...prev, id]))
+        : prev.filter((x) => x !== id);
+
       try {
-        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(updated));
+        localStorage.setItem('portfolio_read_msg_ids', JSON.stringify(next));
       } catch (e) {}
-      return updated;
+
+      // Persist into Supabase profile table (_customization.readMessageIds)
+      setProfile((curProf) => {
+        const curSocials = curProf.socials || {};
+        const curCustom = curSocials._customization || {};
+        const updatedSocials = {
+          ...curSocials,
+          _customization: {
+            ...curCustom,
+            readMessageIds: next,
+          },
+        };
+
+        supabase
+          .from('profile')
+          .upsert({
+            id: 'main',
+            name: curProf.name,
+            role: curProf.role,
+            avatar_url: curProf.avatarUrl,
+            headline: curProf.headline,
+            bio: curProf.bio,
+            location: curProf.location,
+            available_for_work: curProf.availableForWork,
+            socials: updatedSocials,
+            updated_at: new Date().toISOString(),
+          })
+          .then(({ error }) => {
+            if (error) console.warn('Supabase mark read error:', error.message);
+          });
+
+        return {
+          ...curProf,
+          socials: updatedSocials,
+        };
+      });
+
+      return next;
     });
 
-    // If ID is a valid Supabase UUID, sync update to database
+    // 3. Also update direct Supabase messages table if UUID
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
       try {
         await supabase.from('messages').update({ read }).eq('id', id);
       } catch (e) {
-        console.warn('Supabase mark read error:', e);
+        console.warn('Supabase mark read table error:', e);
       }
     }
   };
 
   const deleteMessage = async (id: string) => {
-    setMessages((prev) => {
-      const updated = prev.filter((msg) => msg.id !== id);
-      try {
-        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
+    // 1. Remove from in-memory messages
+    setMessages((prev) => prev.filter((msg) => msg.id !== id));
+
+    // 2. Persist deleted ID to Supabase profile
+    setProfile((curProf) => {
+      const curSocials = curProf.socials || {};
+      const curCustom = curSocials._customization || {};
+      const curDeleted: string[] = Array.isArray(curCustom.deletedMessageIds) ? curCustom.deletedMessageIds : [];
+      const nextDeleted = Array.from(new Set([...curDeleted, id]));
+
+      const updatedSocials = {
+        ...curSocials,
+        _customization: {
+          ...curCustom,
+          deletedMessageIds: nextDeleted,
+        },
+      };
+
+      supabase
+        .from('profile')
+        .upsert({
+          id: 'main',
+          name: curProf.name,
+          role: curProf.role,
+          avatar_url: curProf.avatarUrl,
+          headline: curProf.headline,
+          bio: curProf.bio,
+          location: curProf.location,
+          available_for_work: curProf.availableForWork,
+          socials: updatedSocials,
+          updated_at: new Date().toISOString(),
+        })
+        .then(({ error }) => {
+          if (error) console.warn('Supabase delete message error:', error.message);
+        });
+
+      return {
+        ...curProf,
+        socials: updatedSocials,
+      };
     });
 
-    // If ID is a valid Supabase UUID, sync delete to database
+    // 3. Also delete from direct Supabase messages table if UUID
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
       try {
         await supabase.from('messages').delete().eq('id', id);
@@ -833,6 +935,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         updateCertificate,
         deleteCertificate,
         messages,
+        readMessageIds,
         sendMessage,
         markMessageRead,
         deleteMessage,

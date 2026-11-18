@@ -7,6 +7,7 @@ export interface SocialLinks {
   email?: string;
   phone?: string;
   whatsapp?: string;
+  _customization?: any;
 }
 
 export interface HeroSectionContent {

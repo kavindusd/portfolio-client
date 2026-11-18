@@ -124,7 +124,7 @@ export const ServicesSection: React.FC = () => {
           return (
             <div
               key={service.id || index}
-              className={`group relative rounded-2xl p-5 sm:p-7 border transition-all duration-300 flex flex-col justify-between overflow-hidden hover:-translate-y-1 ${styles.cardStyles}`}
+              className={`reveal-card group relative rounded-2xl p-5 sm:p-7 border transition-all duration-300 flex flex-col justify-between overflow-hidden hover:-translate-y-1 ${styles.cardStyles}`}
             >
               {/* Top gradient highlight accent strip */}
               <div className={`absolute top-0 left-0 right-0 h-1 ${styles.topLine}`} />

@@ -15,7 +15,12 @@ interface SupabaseMessage {
 }
 
 export const AdminMessages: React.FC = () => {
-  const { messages: localMessages, markMessageRead: markLocalRead, deleteMessage: deleteLocalMessage } = usePortfolio();
+  const {
+    messages: localMessages,
+    markMessageRead: markLocalRead,
+    deleteMessage: deleteLocalMessage,
+    readMessageIds,
+  } = usePortfolio();
   const [supabaseMessages, setSupabaseMessages] = useState<SupabaseMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -50,32 +55,36 @@ export const AdminMessages: React.FC = () => {
   };
 
   const handleMarkRead = (id: string, readState = true) => {
-    // Optimistic UI update for both Supabase list and context
+    // 1. Optimistic UI update in Supabase local cache
     setSupabaseMessages((prev) =>
       prev.map((m) => (m.id === id ? { ...m, read: readState } : m))
     );
+    // 2. Persist to context, Supabase profile customization & localStorage
     markLocalRead(id, readState);
   };
 
   const handleDelete = (id: string) => {
     if (!confirm('Are you sure you want to delete this inquiry?')) return;
 
-    // Optimistic UI update for both Supabase list and context
+    // 1. Optimistic UI update in Supabase local cache
     setSupabaseMessages((prev) => prev.filter((m) => m.id !== id));
+    // 2. Persist delete to context, Supabase profile customization & localStorage
     deleteLocalMessage(id);
   };
 
-  // Use Supabase messages if available, otherwise fallback to local messages
-  const displayList = supabaseMessages.length > 0
-    ? supabaseMessages.map((m) => ({
-        id: m.id,
-        name: m.name,
-        email: m.email,
-        message: m.message,
-        read: m.read,
-        createdAt: m.created_at || new Date().toISOString(),
-      }))
-    : localMessages;
+  // Combine Supabase messages with context read-status persistence
+  const sourceList = supabaseMessages.length > 0 ? supabaseMessages : localMessages;
+  const displayList = sourceList.map((m: any) => {
+    const isRead = Boolean(m.read) || (Array.isArray(readMessageIds) && readMessageIds.includes(m.id));
+    return {
+      id: m.id,
+      name: m.name,
+      email: m.email,
+      message: m.message,
+      read: isRead,
+      createdAt: m.created_at || m.createdAt || new Date().toISOString(),
+    };
+  });
 
   return (
     <div className="space-y-6">
