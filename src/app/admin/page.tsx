@@ -10,6 +10,7 @@ import { AdminProjects } from '../../components/admin/AdminProjects';
 import { AdminExperienceEducation } from '../../components/admin/AdminExperienceEducation';
 import { AdminMessages } from '../../components/admin/AdminMessages';
 import { AdminCustomization } from '../../components/admin/AdminCustomization';
+import { AnimatedCatLogo } from '../../components/ui/AnimatedCatLogo';
 
 type AdminTab = 'overview' | 'projects' | 'experience' | 'messages' | 'customization';
 
@@ -79,8 +80,8 @@ export default function AdminPage() {
   if (loadingAuth) {
     return (
       <div className="min-h-screen bg-[#07070b] flex flex-col items-center justify-center text-zinc-300">
-        <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-4 animate-pulse">
-          <Icons.Shield size={24} />
+        <div className="mb-4">
+          <AnimatedCatLogo className="scale-110" />
         </div>
         <p className="text-sm font-medium text-zinc-400">Verifying Admin Session...</p>
       </div>
@@ -98,8 +99,8 @@ export default function AdminPage() {
         <div className="relative w-full max-w-md rounded-2xl bg-[#0c0c14]/90 border border-zinc-800/80 shadow-2xl p-6 sm:p-8 backdrop-blur-xl">
           {/* Brand & Title */}
           <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 mx-auto flex items-center justify-center text-white shadow-lg shadow-purple-600/30 mb-3">
-              <Icons.Shield size={22} />
+            <div className="flex justify-center mb-3">
+              <AnimatedCatLogo className="scale-125" />
             </div>
             <h2 className="text-2xl font-extrabold text-white tracking-tight">Studio Admin</h2>
             <p className="text-xs text-zinc-400 mt-1">
@@ -191,9 +192,7 @@ export default function AdminPage() {
         <div>
           {/* Brand header */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-purple-600/30">
-              <Icons.Shield size={16} />
-            </div>
+            <AnimatedCatLogo />
             <div>
               <h1 className="font-bold text-zinc-900 dark:text-white text-sm tracking-tight leading-none">
                 Studio Admin
