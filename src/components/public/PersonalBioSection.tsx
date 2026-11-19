@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { usePortfolio } from '../../context/PortfolioContext';
-import { Icons } from '../ui/Icons';
 import { PeekingCat } from '../ui/PeekingCat';
 
 export const PersonalBioSection: React.FC = () => {
@@ -146,25 +144,6 @@ export const PersonalBioSection: React.FC = () => {
           <blockquote className="max-w-2xl mx-auto text-sm sm:text-lg md:text-xl font-medium text-zinc-800 dark:text-zinc-200 italic leading-relaxed">
             &ldquo;{quoteText}&rdquo;
           </blockquote>
-        </div>
-
-        {/* ── Action Buttons Row ── */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center sm:justify-start gap-3 sm:gap-4 pt-2">
-          <Link
-            href="#contact"
-            className="flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-lg shadow-purple-600/25 transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
-          >
-            <span>Get In Touch</span>
-            <Icons.Send size={14} />
-          </Link>
-
-          <Link
-            href="#projects"
-            className="flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white bg-stone-100/80 hover:bg-white dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-stone-300/70 dark:border-zinc-800 hover:border-purple-500/40 shadow-xs transition-all text-center cursor-pointer"
-          >
-            <span>View Featured Projects</span>
-            <Icons.Folder size={14} className="text-purple-600 dark:text-purple-400" />
-          </Link>
         </div>
       </div>
     </section>
