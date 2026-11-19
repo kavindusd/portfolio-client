@@ -240,7 +240,7 @@ export const TechMarquee: React.FC = () => {
           <div
             key={`${tech.title}-${idx}`}
             title={tech.title}
-            className="flex items-center justify-center p-1 rounded-xl transition-transform duration-300 hover:scale-125 cursor-pointer filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] hover:drop-shadow-[0_0_14px_rgba(168,85,247,0.6)] shrink-0"
+            className="flex items-center justify-center p-1 rounded-xl transition-transform duration-300 hover:scale-125 cursor-pointer filter dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] hover:drop-shadow-[0_0_14px_rgba(168,85,247,0.6)] shrink-0"
           >
             {tech.icon}
           </div>
