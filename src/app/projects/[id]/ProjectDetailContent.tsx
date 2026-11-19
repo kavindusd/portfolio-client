@@ -38,13 +38,13 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
       document.documentElement.style.colorScheme = 'dark';
       try {
         localStorage.setItem('portfolio-theme', 'dark');
-      } catch {}
+      } catch { }
     } else {
       document.documentElement.classList.remove('dark');
       document.documentElement.style.colorScheme = 'light';
       try {
         localStorage.setItem('portfolio-theme', 'light');
-      } catch {}
+      } catch { }
     }
   };
 
@@ -279,7 +279,7 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
 
         {/* ── Project Details: 2-Column Grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 sm:gap-12 mb-16">
-          {/* Left Column: Overview, Features & Deliverables (2 Cols) */}
+          {/* Left Column: Overview, Features & Gallery (2 Cols) */}
           <div className="lg:col-span-2 space-y-10">
             {/* Overview */}
             <div>
@@ -309,26 +309,6 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
                       <span className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
                         {feature}
                       </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Deliverables */}
-            {project.deliverables && project.deliverables.length > 0 && (
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight mb-3">
-                  Key Deliverables
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {project.deliverables.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="px-3 py-1.5 rounded-xl text-xs font-medium bg-purple-50/80 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50 flex items-center gap-1.5"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                      <span>{item}</span>
                     </div>
                   ))}
                 </div>
