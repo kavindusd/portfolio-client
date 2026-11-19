@@ -57,6 +57,47 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
   const prevProject = projectIndex > 0 ? projectList[projectIndex - 1] : projectList[projectList.length - 1];
   const nextProject = projectIndex < projectList.length - 1 ? projectList[projectIndex + 1] : projectList[0];
 
+  // Image Lightbox Viewer State
+  const [lightboxState, setLightboxState] = useState<{
+    isOpen: boolean;
+    images: string[];
+    currentIndex: number;
+  }>({
+    isOpen: false,
+    images: [],
+    currentIndex: 0,
+  });
+
+  // Handle ESC, Left, Right keyboard navigation and body scroll lock
+  useEffect(() => {
+    if (!lightboxState.isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLightboxState((prev) => ({ ...prev, isOpen: false }));
+      } else if (e.key === 'ArrowRight' && lightboxState.images.length > 1) {
+        setLightboxState((prev) => ({
+          ...prev,
+          currentIndex: (prev.currentIndex + 1) % prev.images.length,
+        }));
+      } else if (e.key === 'ArrowLeft' && lightboxState.images.length > 1) {
+        setLightboxState((prev) => ({
+          ...prev,
+          currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length,
+        }));
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [lightboxState.isOpen, lightboxState.images.length]);
+
   if (!project) {
     return (
       <div className="relative min-h-screen bg-[#f8f5ee] dark:bg-[#050508] text-zinc-900 dark:text-zinc-100 flex flex-col justify-center items-center px-6">
@@ -212,14 +253,28 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
 
         {/* ── Main Showcase Image (Only when an image is uploaded) ── */}
         {project.imageUrl && project.imageUrl !== '/avatar.png' && (
-          <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-stone-300/70 dark:border-zinc-800/80 shadow-2xl mb-12 sm:mb-16">
+          <button
+            type="button"
+            onClick={() =>
+              setLightboxState({
+                isOpen: true,
+                images: [project.imageUrl!, ...(project.gallery || [])],
+                currentIndex: 0,
+              })
+            }
+            className="group relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-stone-300/70 dark:border-zinc-800/80 shadow-2xl mb-12 sm:mb-16 block text-left focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-zoom-in"
+          >
             <img
               src={project.imageUrl}
               alt={project.title}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-          </div>
+            <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md text-white text-xs font-medium border border-white/15 opacity-80 group-hover:opacity-100 transition-opacity shadow-lg">
+              <Icons.ZoomIn size={14} className="text-purple-400" />
+              <span>Click to view larger</span>
+            </div>
+          </button>
         )}
 
         {/* ── Project Details: 2-Column Grid ── */}
@@ -283,14 +338,27 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
             {/* Visual Gallery Showcase */}
             {project.gallery && project.gallery.length > 0 && (
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight mb-4">
-                  Visual Gallery
-                </h2>
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+                    Visual Gallery
+                  </h2>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Click screenshot to expand
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {project.gallery.map((imgUrl, gIdx) => (
-                    <div
+                    <button
+                      type="button"
                       key={gIdx}
-                      className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-zinc-900 border border-stone-200/90 dark:border-zinc-800 group"
+                      onClick={() =>
+                        setLightboxState({
+                          isOpen: true,
+                          images: project.gallery!,
+                          currentIndex: gIdx,
+                        })
+                      }
+                      className="group relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-zinc-900 border border-stone-200/90 dark:border-zinc-800 text-left focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-zoom-in transition-all hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-500/40"
                     >
                       <img
                         src={imgUrl}
@@ -298,7 +366,14 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
-                    </div>
+                      {/* Hover Overlay with Zoom Badge */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-black/75 backdrop-blur-md text-white text-xs font-semibold border border-white/20 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                          <Icons.ZoomIn size={15} className="text-purple-400" />
+                          <span>View Larger</span>
+                        </div>
+                      </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -399,6 +474,106 @@ export const ProjectDetailContent: React.FC<ProjectDetailContentProps> = ({ proj
       <footer className="py-6 border-t border-stone-200/80 dark:border-zinc-900 text-center text-xs text-zinc-500">
         <p>© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
       </footer>
+
+      {/* ── Fullscreen Image Lightbox Modal ── */}
+      {lightboxState.isOpen && lightboxState.images.length > 0 && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged screenshot viewer"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-3 sm:p-6 animate-fade-in select-none"
+          onClick={() => setLightboxState((prev) => ({ ...prev, isOpen: false }))}
+        >
+          {/* Top Bar with Counter and Close Button */}
+          <div
+            className="absolute top-4 inset-x-4 sm:top-6 sm:inset-x-8 flex items-center justify-between z-10 pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-3.5 py-1.5 rounded-full bg-white/10 dark:bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs font-medium">
+              <span>Photo {lightboxState.currentIndex + 1} of {lightboxState.images.length}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <a
+                href={lightboxState.images[lightboxState.currentIndex]}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open original image in new tab"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white flex items-center justify-center transition-all cursor-pointer"
+              >
+                <Icons.ExternalLink size={16} />
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setLightboxState((prev) => ({ ...prev, isOpen: false }))}
+                aria-label="Close fullscreen view"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/15 text-white flex items-center justify-center transition-all cursor-pointer"
+              >
+                <Icons.X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Previous Button */}
+          {lightboxState.images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxState((prev) => ({
+                  ...prev,
+                  currentIndex: (prev.currentIndex - 1 + prev.images.length) % prev.images.length,
+                }));
+              }}
+              aria-label="Previous image"
+              className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer pointer-events-auto shadow-xl"
+            >
+              <Icons.ChevronLeft size={22} />
+            </button>
+          )}
+
+          {/* Next Button */}
+          {lightboxState.images.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxState((prev) => ({
+                  ...prev,
+                  currentIndex: (prev.currentIndex + 1) % prev.images.length,
+                }));
+              }}
+              aria-label="Next image"
+              className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer pointer-events-auto shadow-xl"
+            >
+              <Icons.ChevronRight size={22} />
+            </button>
+          )}
+
+          {/* Main Large Image Container */}
+          <div
+            className="relative max-w-5xl max-h-[82vh] w-full flex items-center justify-center pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              key={lightboxState.images[lightboxState.currentIndex]}
+              src={lightboxState.images[lightboxState.currentIndex]}
+              alt={`${project.title} enlarged screenshot`}
+              className="max-w-full max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-white/10 animate-fade-in"
+            />
+          </div>
+
+          {/* Bottom Caption Hint */}
+          <div
+            className="absolute bottom-4 inset-x-4 sm:bottom-6 text-center pointer-events-none"
+          >
+            <span className="text-[11px] sm:text-xs text-white/60 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10">
+              Press Esc or click outside to close • Use ← → arrow keys to navigate
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
